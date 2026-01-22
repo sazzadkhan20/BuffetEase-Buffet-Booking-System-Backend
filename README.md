@@ -1,7 +1,5 @@
 # BuffetEase-Buffet-Booking-System-Backend
 
-![BuffetEase Logo](https://via.placeholder.com/250x80.png?text=BuffetEase)
-
 **BuffetEase** is a **Spring Boot Web API** for managing buffet bookings for restaurants.  
 This backend application is built using **Java 21, Spring Boot 4.0.1, Maven**, and follows a **layered architecture** with **JWT-based security**, supporting **ADMIN** and **CUSTOMER** roles.
 
@@ -321,10 +319,10 @@ roles ───< users ───< user_credentials
 
 ## 🤝 Team
 
-| Name           | Role                  | Responsibilities                         |
-| -------------- | --------------------- | ---------------------------------------- |
-| Md Sazzad Khan | Project Coordinator   | Backend architecture, security, APIs     |
-| Abir Ghosh     |  Backend Developer    | Database design, repository, DTO mapping |
+| Name           | Role                  | Responsibilities                             |
+| -------------- | --------------------- | ---------------------------------------------|
+| Md Sazzad Khan | Project Coordinator   | Backend architecture, security, APIs         |
+| Abir Ghosh     |  Backend Developer    | Database design, APIs,repository, DTO mapping|
 
 ---
 
