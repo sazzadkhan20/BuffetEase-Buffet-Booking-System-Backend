@@ -17,15 +17,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * Service for authentication operations
- *
- * Handles:
- * 1. User login
- * 2. Token generation (access + refresh)
- * 3. Token refresh
- * 4. Logout
- */
 @Service
 public class AuthService {
 
@@ -49,24 +40,8 @@ public class AuthService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    /**
-     * Login user and generate tokens
-     *
-     * Process:
-     * 1. Authenticate user credentials
-     * 2. Load user details
-     * 3. Generate access token
-     * 4. Generate refresh token
-     * 5. Save refresh token to database
-     * 6. Update last login time
-     * 7. Return both tokens
-     *
-     * @param loginRequest - contains email and password
-     * @return LoginResponse with access token and refresh token
-     */
     public LoginResponseDTO login(LoginRequestDTO loginRequest) {
         try {
-            // 1. Authenticate user
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(),
@@ -79,23 +54,15 @@ public class AuthService {
             String accessToken = jwtService.generateAccessToken(user);
             String refreshTokenString = UUID.randomUUID().toString();
 
-            // 5. Save refresh token to database
             RefreshTokenEntity refreshToken = new RefreshTokenEntity(
                     refreshTokenString,
                     user.getId(),
                     LocalDateTime.now().plusSeconds(refreshTokenExpiration / 1000)
             );
 
-            // Delete old refresh tokens for this user
             refreshTokenRepository.deleteByUserId(user.getId());
-
-            // Save new refresh token
             refreshTokenRepository.save(refreshToken);
-
-            // 6. Update last login
             userRepository.updateLastLogin(user.getEmail());
-
-            // 7. Return response
             return new LoginResponseDTO(
                     accessToken,
                     refreshTokenString,
@@ -106,7 +73,7 @@ public class AuthService {
             );
 
         } catch (AuthenticationException e) {
-            throw new RuntimeException("Invalid email or password");
+            throw new InvalidCredentialsException("Invalid email or password");
         }
     }
 
@@ -125,6 +92,7 @@ public class AuthService {
     }
 
     public void logout(Long userId) {
+
         refreshTokenRepository.deleteByUserId(userId);
     }
 }

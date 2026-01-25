@@ -1,6 +1,5 @@
 package com.BuffetEase.configs;
 
-import com.BuffetEase.dtos.ErrorResponseDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,10 +14,6 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * CUSTOM AUTHENTICATION ENTRY POINT
- * Alternative version without ObjectMapper
- */
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
@@ -36,11 +31,9 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
-        // Get current timestamp
         String timestamp = LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
 
-        // Build JSON manually
         String jsonResponse = String.format(
                 "{" +
                         "\"timestamp\":\"%s\"," +
@@ -56,7 +49,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                 request.getRequestURI()
         );
 
-        // Write response
         PrintWriter writer = response.getWriter();
         writer.write(jsonResponse);
         writer.flush();
