@@ -79,7 +79,6 @@ public class UserRepository {
             user.setEmail(rs.getString("email"));
             user.setPassword(rs.getString("password"));
 
-            // Handle timestamps (can be null)
             var createdAt = rs.getTimestamp("created_at");
             if (createdAt != null) {
                 user.setCreatedAt(createdAt.toLocalDateTime());

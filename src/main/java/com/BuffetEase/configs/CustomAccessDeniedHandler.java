@@ -14,10 +14,6 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * CUSTOM ACCESS DENIED HANDLER
- * Alternative version without ObjectMapper
- */
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 

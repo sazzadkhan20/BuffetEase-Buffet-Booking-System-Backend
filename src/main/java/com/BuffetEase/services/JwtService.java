@@ -33,7 +33,6 @@ public class JwtService {
         try {
             return extractUsername(token);
         } catch (ExpiredJwtException e) {
-            // Token is expired, but we can still get the claims
             return e.getClaims().getSubject();
         }
     }
