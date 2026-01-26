@@ -6,6 +6,7 @@ import com.BuffetEase.services.BuffetScheduleService;
 import org.jspecify.annotations.Nullable;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ public class BuffetScheduleController {
         this.service = service;
     }
 
+    @PreAuthorize("hasRole(ADMIN)")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody BuffetScheduleDTO dto,
                                     BindingResult bindingResult) {

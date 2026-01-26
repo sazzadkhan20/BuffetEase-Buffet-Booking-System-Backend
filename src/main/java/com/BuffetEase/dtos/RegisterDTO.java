@@ -26,8 +26,8 @@ public class RegisterDTO {
 
     @NotBlank(message = "Phone number is required")
     @Pattern(
-            regexp = "^[0-9]{10}$",
-            message = "Phone number must be exactly 10 digits"
+            regexp = "^[0-9]{11}$",
+            message = "Phone number must be exactly 11 digits"
     )
     private String phone;
 

@@ -2,6 +2,7 @@ package com.BuffetEase.services;
 
 import com.BuffetEase.entities.UserEntity;
 import com.BuffetEase.repositories.UserRepository;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +24,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (!user.getIsActive()) {
             throw new UsernameNotFoundException("User account is disabled");
         }
-
         return user;
     }
 }

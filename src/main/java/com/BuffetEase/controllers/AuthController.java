@@ -24,11 +24,22 @@ public class AuthController {
         this.authService = authService;
     }
 
-//    @PostMapping("/register")
-//    public ReposeEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO)
-//    {
-//
-//    }
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO)
+    {
+        boolean flag = authService.register(registerDTO);
+        if (flag) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("message", "User registered successfully");
+            return ResponseEntity.ok(response);
+        } else {
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "error");
+            response.put("message", "Registration failed");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
