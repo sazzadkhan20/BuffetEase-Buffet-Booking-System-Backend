@@ -77,4 +77,42 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
+
+
+    @PostMapping("/request-reset-otp")
+    public ResponseEntity<?> requestOtp(@Valid @RequestBody PasswordResetRequestDTO dto) {
+
+        authService.sendResetOtp(dto.getEmail());
+
+        return ResponseEntity.ok(
+                Map.of("status", "success", "message", "OTP sent to email")
+        );
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDTO dto) {
+
+        authService.resetPassword(dto);
+
+        return ResponseEntity.ok(
+                Map.of("status", "success", "message", "Password reset successfully")
+        );
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @Valid @RequestBody ChangePasswordDTO dto) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserEntity user = (UserEntity) auth.getPrincipal();
+
+        authService.changePassword(user, dto);
+
+        return ResponseEntity.ok(
+                Map.of("status", "success", "message", "Password changed successfully")
+        );
+    }
+
+
+
 }

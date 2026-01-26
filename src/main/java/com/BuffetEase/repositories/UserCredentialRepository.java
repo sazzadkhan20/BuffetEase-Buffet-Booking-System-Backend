@@ -40,4 +40,19 @@ public class UserCredentialRepository {
         int count = jdbcTemplate.queryForObject(sql,params,Integer.class);
         return count > 0;
     }
+
+
+    public void updatePassword(String email, String encodedPassword) {
+
+        String sql = """
+        UPDATE user_credentials
+        SET password = :password
+        WHERE email = :email
+    """;
+
+        jdbcTemplate.update(sql, new MapSqlParameterSource()
+                .addValue("password", encodedPassword)
+                .addValue("email", email));
+    }
+
 }
