@@ -5,6 +5,7 @@ import com.BuffetEase.dtos.BuffetPackageDTO;
 import com.BuffetEase.services.BuffetPackageService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ public class BuffetPackageController {
         this.service = service;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody BuffetPackageDTO dto,
                                     BindingResult bindingResult) {
@@ -37,6 +39,7 @@ public class BuffetPackageController {
         return ResponseEntity.ok("Buffet package created");
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable int id,
                                     @Valid @RequestBody BuffetPackageDTO dto,
@@ -55,6 +58,7 @@ public class BuffetPackageController {
         return ResponseEntity.ok("Buffet package updated");
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable int id) {
         service.delete(id);
