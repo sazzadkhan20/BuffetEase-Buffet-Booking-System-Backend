@@ -1,5 +1,6 @@
 package com.BuffetEase.repositories;
 
+import ch.qos.logback.core.joran.sanity.Pair;
 import com.BuffetEase.entities.BuffetSchedule;
 import com.BuffetEase.interfaces.IBuffetScheduleRepository;
 import org.springframework.jdbc.core.namedparam.*;
@@ -7,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +72,32 @@ public class BuffetScheduleRepository implements IBuffetScheduleRepository {
         return jdbcTemplate.queryForObject(sql,
                 new MapSqlParameterSource("id", id),
                 (rs, rowNum) -> map(rs));
+    }
+
+    public int checkAvailability(int id, int capacity) {
+        BuffetSchedule schedule = this.getById(id);
+        if (schedule == null)
+            return 0;
+        else if (!schedule.isOpen())
+            return 0;
+        else if (schedule.getAvailableCapacity() < capacity)
+            return 0;
+        else if (schedule.getBuffetDate().isBefore(LocalDate.now()))
+            return 0;
+        return schedule.getBuffetPackageId();
+    }
+
+    public boolean update(int id,int capacity) {
+        String sql = """
+            UPDATE buffet_schedules
+            SET available_capacity = :capacity
+            WHERE id = :id
+        """;
+        BuffetSchedule schedule = this.getById(id);
+        jdbcTemplate.update(sql, new MapSqlParameterSource()
+                            .addValue("capacity", schedule.getAvailableCapacity()-capacity)
+                            .addValue("id",id));
+        return true;
     }
 
     @Override

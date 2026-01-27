@@ -1,56 +1,54 @@
 package com.BuffetEase.dtos;
+
 import jakarta.validation.constraints.*;
-import java.time.LocalDateTime;
 
 public class BuffetBookingCreateDTO {
 
-    @NotBlank
-    @Min(1)
-    private int userId;
+    @NotNull(message = "Buffet schedule ID is required")
+    @Positive(message = "Buffet schedule ID must be a positive number")
+    private Integer buffetScheduleId;
 
-    @NotBlank
-    @Min(1)
-    private int buffetScheduleId;
+    @Min(value = 1, message = "Number of guests must be at least 1")
+    @Max(value = 50, message = "Number of guests cannot exceed 50")
+    private Integer numberOfGuests = 1;
 
-    @NotBlank
-    @Min(value = 1, message = "numberOfGuests must be greater than 0")
-    private int numberOfGuests;
-
-    @NotBlank
-    @Min(1)
-    private int paymentId;
-
-    public BuffetBookingCreateDTO() {}
-
-    public int getUserId() {
-        return userId;
+    public BuffetBookingCreateDTO() {
+        this.numberOfGuests = 1;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public BuffetBookingCreateDTO(Integer buffetScheduleId, Integer numberOfGuests) {
+        this.buffetScheduleId = buffetScheduleId;
+        this.numberOfGuests = (numberOfGuests != null && numberOfGuests > 0) ? numberOfGuests : 1;
     }
 
-    public int getBuffetScheduleId() {
+    public BuffetBookingCreateDTO(Integer buffetScheduleId) {
+        this.buffetScheduleId = buffetScheduleId;
+        this.numberOfGuests = 1;
+    }
+
+    public Integer getBuffetScheduleId() {
         return buffetScheduleId;
     }
 
-    public void setBuffetScheduleId(int buffetScheduleId) {
+    public void setBuffetScheduleId(Integer buffetScheduleId) {
         this.buffetScheduleId = buffetScheduleId;
     }
 
-    public int getNumberOfGuests() {
+    public Integer getNumberOfGuests() {
         return numberOfGuests;
     }
-
-    public void setNumberOfGuests(int numberOfGuests) {
-        this.numberOfGuests = numberOfGuests;
+    public void setNumberOfGuests(Integer numberOfGuests) {
+        if (numberOfGuests == null || numberOfGuests <= 0) {
+            this.numberOfGuests = 1;
+        } else {
+            this.numberOfGuests = numberOfGuests;
+        }
     }
-
-    public int getPaymentId() {
-        return paymentId;
-    }
-
-    public void setPaymentId(int paymentId) {
-        this.paymentId = paymentId;
+    @Override
+    public String toString() {
+        return "BuffetBookingCreateDTO{" +
+                "buffetScheduleId=" + buffetScheduleId +
+                ", numberOfGuests=" + numberOfGuests +
+                '}';
     }
 }

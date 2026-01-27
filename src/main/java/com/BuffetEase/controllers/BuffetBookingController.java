@@ -5,9 +5,11 @@ import com.BuffetEase.dtos.BuffetBookingUpdateDTO;
 import com.BuffetEase.services.BuffetBookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,8 +23,8 @@ public class BuffetBookingController {
         this.service = service;
     }
 
-    @PostMapping("/bookings")
-    public ResponseEntity<?> create(@Valid @RequestBody BuffetBookingCreateDTO dto, BindingResult br) {
+    @PostMapping("/bookings/{id}")
+    public ResponseEntity<?> create(@PathVariable int id,@Valid @RequestBody BuffetBookingCreateDTO dto, BindingResult br) {
         if (br.hasErrors())
             return ResponseEntity.badRequest().body(
                     br.getFieldErrors().stream()
@@ -30,8 +32,11 @@ public class BuffetBookingController {
                             .toList()
             );
 
-        service.createBooking(dto);
-        return ResponseEntity.ok("Booking confirmed");
+        this. service.createBooking(id,dto);
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("message", "Booking Done successfully");
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/bookings/{id}/cancel")

@@ -12,9 +12,12 @@ import java.util.List;
 @Repository
 public class BookingPaymentRepository implements IBookingPaymentRepository {
     private final NamedParameterJdbcTemplate jdbc;
+    private final BuffetBookingRepository bookingRepository;
 
-    public BookingPaymentRepository(NamedParameterJdbcTemplate jdbc) {
+    public BookingPaymentRepository(NamedParameterJdbcTemplate jdbc
+    , BuffetBookingRepository bookingRepository) {
         this.jdbc = jdbc;
+        this.bookingRepository = bookingRepository;
     }
 
     @Override
@@ -61,6 +64,8 @@ public class BookingPaymentRepository implements IBookingPaymentRepository {
                 new MapSqlParameterSource()
                         .addValue("status", status)
                         .addValue("txn", transactionId));
+        int id = this.findByTransactionId(transactionId);
+        this.bookingRepository.updateBookingStatus(id,"CONFIRMED");
     }
 
     @Override
@@ -81,5 +86,13 @@ public class BookingPaymentRepository implements IBookingPaymentRepository {
         return jdbc.queryForList("""
             SELECT * FROM booking_payments WHERE booking_id = :bookingId
         """, new MapSqlParameterSource("bookingId", bookingId));
+    }
+
+    private int findByTransactionId(String transactionId) {
+        String sql = """
+        SELECT booking_id from booking_payments WHERE transaction_id = :transactionId
+        """;
+        return jdbc.queryForObject(sql,new MapSqlParameterSource()
+                .addValue("transactionId", transactionId),Integer.class);
     }
 }

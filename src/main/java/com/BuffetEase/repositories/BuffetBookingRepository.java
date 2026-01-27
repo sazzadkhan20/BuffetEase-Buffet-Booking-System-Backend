@@ -33,7 +33,7 @@ public class BuffetBookingRepository implements IBuffetBookingRepository {
                 .addValue("guests", booking.getNumberOfGuests())
                 .addValue("price", booking.getTotalPrice())
                 .addValue("status", booking.getBookingStatus())
-                .addValue("time", Timestamp.valueOf(booking.getBookingTime()));
+                .addValue("time", LocalDateTime.now());
 
         jdbc.update(sql, params);
         return 1;
@@ -63,6 +63,8 @@ public class BuffetBookingRepository implements IBuffetBookingRepository {
         Integer count = jdbc.queryForObject(sql, new MapSqlParameterSource("id", bookingId), Integer.class);
         return count != null && count > 0;
     }
+
+    public void Booking(BuffetBookingEntity booking) {}
 
     @Override
     public void updateBookingStatus(int bookingId, String status) {

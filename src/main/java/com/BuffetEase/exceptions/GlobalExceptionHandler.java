@@ -22,6 +22,26 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(PackageNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handlePackageNotFoundException(
+            Exception ex,
+            HttpServletRequest request
+    ) {
+        System.err.println("Package Not Found: " + ex.getClass().getName());
+        System.err.println("Message: " + ex.getMessage());
+        ex.printStackTrace();
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                "No Suitable Package Available Right Now. Please try again later.",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(errorResponse);
+    }
+
     @ExceptionHandler(TokenRefreshException.class)
     public ResponseEntity<ErrorResponseDTO> handleTokenRefreshException(
             TokenRefreshException ex,

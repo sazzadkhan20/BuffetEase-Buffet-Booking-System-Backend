@@ -3,8 +3,11 @@ package com.BuffetEase.repositories;
 import com.BuffetEase.entities.BuffetPackage;
 import org.springframework.jdbc.core.namedparam.*;
 import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import com.BuffetEase.interfaces.IBuffetPackageRepository;
@@ -62,6 +65,18 @@ public class BuffetPackageRepository implements IBuffetPackageRepository {
         return jdbcTemplate.queryForObject(sql,
                 new MapSqlParameterSource("id", id),
                 (rs, rowNum) -> mapRow(rs));
+    }
+
+    public BigDecimal checkAvailability(int id) {
+        BuffetPackage p = getById(id);
+        if(p == null)
+            return BigDecimal.ZERO;
+        else if(!p.getIsActive())
+            return BigDecimal.ZERO;
+        else if(p.getStartTime() != null && p.getStartTime().equals(LocalTime.now()) && p.getStartTime().isBefore(LocalTime.now()))
+            return BigDecimal.ZERO;
+        System.out.println(p.getPricePerPerson());
+        return p.getPricePerPerson();
     }
 
     @Override
