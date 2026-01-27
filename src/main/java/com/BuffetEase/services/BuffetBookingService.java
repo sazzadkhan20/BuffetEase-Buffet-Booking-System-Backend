@@ -2,10 +2,16 @@ package com.BuffetEase.services;
 
 import com.BuffetEase.dtos.BuffetBookingCreateDTO;
 import com.BuffetEase.dtos.BuffetBookingUpdateDTO;
+import com.BuffetEase.dtos.BuffetScheduleDTO;
 import com.BuffetEase.entities.BuffetBookingEntity;
+import com.BuffetEase.exceptions.PackageNotFoundException;
 import com.BuffetEase.interfaces.IBuffetBookingRepository;
+import com.BuffetEase.repositories.BuffetBookingRepository;
+import com.BuffetEase.repositories.BuffetPackageRepository;
+import com.BuffetEase.repositories.BuffetScheduleRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDateTime;
@@ -14,43 +20,35 @@ import java.time.LocalDateTime;
 public class BuffetBookingService {
 
     private IBuffetBookingRepository repo;
+    private final BuffetScheduleRepository scheduleRepo;
+    private final BuffetPackageRepository packageRepo;
 
-    public BuffetBookingService(IBuffetBookingRepository repo) {
+    public BuffetBookingService(IBuffetBookingRepository repo,
+                                BuffetScheduleRepository scheduleRepo,
+                                BuffetPackageRepository packageRepo) {
         this.repo = repo;
+        this.scheduleRepo = scheduleRepo;
+        this.packageRepo = packageRepo;
+
     }
 
-    public void createBooking(BuffetBookingCreateDTO dto) {
-
-        if (!repo.userExistsAndActive(dto.getUserId()))
-            throw new RuntimeException("User not found or inactive");
-
-        if (!repo.buffetScheduleExistsAndOpen(dto.getBuffetScheduleId()))
-            throw new RuntimeException("Buffet schedule closed or not found");
-
-        if (!repo.buffetScheduleDateValid(dto.getBuffetScheduleId()))
-            throw new RuntimeException("Buffet date already passed");
-
-        if (!repo.buffetPackageActiveForSchedule(dto.getBuffetScheduleId()))
-            throw new RuntimeException("Buffet package is inactive");
-
-        if (!repo.paymentVerified(dto.getPaymentId()))
-            throw new RuntimeException("Payment not verified");
-
-        if (dto.getNumberOfGuests() > repo.getAvailableCapacity(dto.getBuffetScheduleId()))
-            throw new RuntimeException("Not enough available seats");
-
-        double totalPrice = repo.calculateTotalPrice(dto.getBuffetScheduleId(), dto.getNumberOfGuests());
-
+    public void createBooking(int id,BuffetBookingCreateDTO dto) {
+        int packageId = scheduleRepo.checkAvailability(dto.getBuffetScheduleId(),dto.getNumberOfGuests());
+        if (packageId == 0)
+            throw new PackageNotFoundException("Buffet schedule closed or not found");
+        else if(packageRepo.checkAvailability(packageId).equals(BigDecimal.ZERO))
+            throw new PackageNotFoundException("Buffet package not available or date passed");
         BuffetBookingEntity booking = new BuffetBookingEntity();
-        booking.setUserId(dto.getUserId());
+        booking.setUserId(id);
+        booking.setBookingStatus("PENDING");
         booking.setBuffetScheduleId(dto.getBuffetScheduleId());
+        BigDecimal pricePerPerson = packageRepo.checkAvailability(packageId);
+        BigDecimal totalPrice = pricePerPerson
+                .multiply(BigDecimal.valueOf(dto.getNumberOfGuests()));
+        booking.setTotalPrice(totalPrice);
         booking.setNumberOfGuests(dto.getNumberOfGuests());
-        booking.setTotalPrice(java.math.BigDecimal.valueOf(totalPrice));
-        booking.setBookingStatus("CONFIRMED");
-        booking.setBookingTime(LocalDateTime.now());
-
         repo.createBooking(booking);
-        repo.decreaseAvailableCapacity(dto.getBuffetScheduleId(), dto.getNumberOfGuests());
+        scheduleRepo.update(dto.getBuffetScheduleId(), dto.getNumberOfGuests());
     }
 
     public void cancelBooking(int bookingId) {

@@ -74,14 +74,14 @@ public class AuthService {
             String accessToken = jwtService.generateAccessToken(user);
             String refreshTokenString = UUID.randomUUID().toString();
 
-//            RefreshTokenEntity refreshToken = new RefreshTokenEntity(
-//                    refreshTokenString,
-//                    user.getId(),
-//                    LocalDateTime.now().plusSeconds(refreshTokenExpiration / 1000)
-//            );
-//
-//            refreshTokenRepository.deleteByUserId(user.getId());
-//            refreshTokenRepository.save(refreshToken);
+            RefreshTokenEntity refreshToken = new RefreshTokenEntity(
+                    refreshTokenString,
+                    user.getId(),
+                    LocalDateTime.now().plusSeconds(refreshTokenExpiration / 1000)
+            );
+
+            refreshTokenRepository.deleteByUserId(user.getId());
+            refreshTokenRepository.save(refreshToken);
             userRepository.updateLastLogin(user.getEmail());
 
             String subject = "New Login Alert";

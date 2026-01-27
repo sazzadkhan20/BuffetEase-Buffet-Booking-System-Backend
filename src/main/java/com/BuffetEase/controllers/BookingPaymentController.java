@@ -7,11 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/payment")
+@RequestMapping("/api/payment")
 public class BookingPaymentController {
 
     private final BookingPaymentService service;
@@ -37,8 +38,13 @@ public class BookingPaymentController {
     }
 
     @PostMapping("/success")
-    public void success(@RequestParam("tran_id") String tranId) {
+    public ResponseEntity<?> success(@RequestParam("tran_id") String tranId) {
+
         service.markSuccess(tranId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("message", "Payment successfull");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/fail")
